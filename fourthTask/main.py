@@ -7,26 +7,12 @@ def input_error(func):
         except ValueError:
             return "provide name and phone please"
         except KeyError:
-            return "wrong key"
+            return "key error"
         except IndexError:
-            return "Enter the argument for the command"
+            return "index error"
     return inner
 
-def show_error(func):
-    def inner(*args, **kwargs):
-        try:
-            return func(*args, **kwargs)
-        except ValueError:
-            return "name not found"
-        except KeyError:
-            return "not a name"
-        except IndexError:
-            return "Enter the argument for the command"
-    return inner
-
-
-
-def show_all(args,contacts):
+def show_all(contacts):
     contacts_string = ""
     for name, phone in contacts.items():
         contacts_string += f"{Fore.BLUE}{name}{Fore.BLACK}: {Fore.WHITE}{phone}\n"
@@ -44,7 +30,7 @@ def change_contact(args,contacts):
     contacts[name]=phone
     return "contact updted"
 
-@show_error
+@input_error
 def show_phone(args,contacts):
     name=args[0]
     return contacts[name]
@@ -60,8 +46,14 @@ def main():
 }
     print("Welcome to the assistant bot!")
     while True:
-        command,*args=input("Enter a command: \n").split()
-        command=command.strip().lower()
+
+        user_input=input("Enter a command: \n").split()
+
+        if not user_input:
+            continue
+
+        command, *args = user_input
+        command = command.strip().lower()
 
         if command in ["close","exit"]:
             print("Good bye!")
@@ -72,7 +64,7 @@ def main():
             case "hello":
                 print("How can I help you?")
             case "all":
-                print(show_all(args,contacts))
+                print(show_all(contacts))
             case "add":
                 print(add_contact(args,contacts))
             case "change":
